@@ -13,6 +13,8 @@
         
         body {
             font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.55)), 
+                        url('https://file.itmtr.cn/find/guang-bg.webp') center/cover fixed;
             color: #e0e0e0;
             display: flex;
             flex-direction: column;
@@ -21,52 +23,6 @@
             margin: 0;
             padding: 20px;
             position: relative;
-            overflow-x: hidden;
-        }
-        
-        /* 背景轮播容器 */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            animation: backgroundSlide 30s infinite;
-            z-index: -2;
-        }
-        
-        @keyframes backgroundSlide {
-            0%, 20% {
-                background-image: url('https://file.itmtr.cn/find/jieying-bg.png');
-            }
-            25%, 45% {
-                background-image: url('https://file.itmtr.cn/find/guang.png');
-            }
-            50%, 70% {
-                background-image: url('https://file.itmtr.cn/find/xue.png');
-            }
-            75%, 95% {
-                background-image: url('https://file.itmtr.cn/find/yinyue.png');
-            }
-            100% {
-                background-image: url('https://file.itmtr.cn/find/jieying-bg.png');
-            }
-        }
-        
-        /* 降低遮罩透明度，让背景更清晰 */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.55));
-            pointer-events: none;
-            z-index: -1;
         }
         
         .container {
