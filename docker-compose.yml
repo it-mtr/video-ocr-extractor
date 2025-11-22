@@ -1,0 +1,24 @@
+services:
+  web:
+    build: .
+    container_name: video-ocr-web
+    ports:
+      - "5000:5000"
+    volumes:
+      # 挂载静态文件和模板（方便更新）
+      - ./static:/app/static
+      - ./templates:/app/templates
+      # 挂载数据库（持久化）
+      - ./names.db:/app/names.db
+      # 挂载日志
+      - ./logs:/app/logs
+    environment:
+      - FLASK_ENV=production
+      - TZ=Asia/Shanghai
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

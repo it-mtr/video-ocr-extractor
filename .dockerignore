@@ -1,0 +1,44 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 项目特定
+input_video.mp4
+names.db
+*.mp4
+*.log
+
+# 文档和说明
+*.md
+!README.md
+
+# 测试
+.pytest_cache/
+.coverage
+
+# 临时文件
+*.tmp
+*.bak
+.DS_Store
+
+# 日志
+logs/
+*.log
+
