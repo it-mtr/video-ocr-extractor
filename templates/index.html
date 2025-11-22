@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>凡人修仙传众筹名单查询</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #2d2d2d;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 30px;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px 24px;
+            background-color: #b8860b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #daa520;
+        }
+        .results {
+            list-style: none;
+            padding: 0;
+        }
+        .result-item {
+            background-color: #383838;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #b8860b;
+        }
+        .time-badge {
+            background-color: #555;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            color: #fff;
+        }
+        .empty-state {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>凡人修仙传众筹名单查询</h1>
+        
+        <form action="/search" method="get" class="search-box">
+            <input type="text" name="q" placeholder="输入名字..." value="{{ query }}" required>
+            <button type="submit">搜 索</button>
+        </form>
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <a href="/all" style="color: #b8860b; text-decoration: none; font-size: 0.9em;">[ 查看所有众筹名单 ]</a>
+        </div>
+
+        {% if results %}
+            <div class="results-count">找到 {{ results|length }} 条结果：</div>
+            <ul class="results">
+                {% for row in results %}
+                <li class="result-item">
+                    <span class="name">{{ row.name }}</span>
+                    <span class="time-badge">出现时间: {{ row.timestamp_seconds | format_real_time }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        {% elif query %}
+            <div class="empty-state">未找到名字为 "{{ query }}" 的道友。</div>
+        {% endif %}
+    </div>
+</body>
+</html>
+

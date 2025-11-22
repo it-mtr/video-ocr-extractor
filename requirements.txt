@@ -1,0 +1,19 @@
+# Web 框架
+flask>=2.3.0
+
+# OCR 相关
+paddleocr>=2.7.0
+# PaddlePaddle 需要根据你的系统单独安装：
+# Windows CPU: pip install paddlepaddle==2.5.1 -i https://mirror.baidu.com/pypi/simple
+# Windows GPU: pip install paddlepaddle-gpu==2.5.1 -i https://mirror.baidu.com/pypi/simple
+# Linux CPU: pip install paddlepaddle==2.5.1
+# Linux GPU: pip install paddlepaddle-gpu==2.5.1
+
+# 图像处理
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# 数据库（Python 内置 sqlite3，无需额外安装）
+
+# 其他依赖
+numpy>=1.24.0

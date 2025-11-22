@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>所有众筹名单 - 凡人修仙传</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #2d2d2d;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+        .nav-links {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            color: #b8860b;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        .stats {
+            text-align: right;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .name-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .name-card {
+            background-color: #383838;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #444;
+            transition: transform 0.2s;
+        }
+        .name-card:hover {
+            transform: translateY(-2px);
+            border-color: #b8860b;
+        }
+        .name-card .name {
+            display: block;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        .name-card .time {
+            font-size: 0.8em;
+            color: #aaa;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 1px solid #444;
+        }
+        .pagination a:hover {
+            background-color: #b8860b;
+        }
+        .pagination .current {
+            background-color: #b8860b;
+            border-color: #b8860b;
+            font-weight: bold;
+        }
+        .pagination .disabled {
+            color: #666;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-links">
+            <a href="/">← 返回搜索首页</a>
+        </div>
+
+        <h1>众筹人员名单一览</h1>
+        
+        <div class="stats">
+            共找到 {{ total_count }} 位道友
+        </div>
+
+        <div class="name-grid">
+            {% for row in results %}
+            <div class="name-card">
+                <span class="name">{{ row.name }}</span>
+                <span class="time">{{ row.timestamp_seconds | format_real_time }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 分页导航 -->
+        <div class="pagination">
+            {% if page > 1 %}
+                <a href="/all?page={{ page - 1 }}">上一页</a>
+            {% else %}
+                <span class="disabled">上一页</span>
+            {% endif %}
+
+            <span class="current">第 {{ page }} / {{ total_pages }} 页</span>
+
+            {% if page < total_pages %}
+                <a href="/all?page={{ page + 1 }}">下一页</a>
+            {% else %}
+                <span class="disabled">下一页</span>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+

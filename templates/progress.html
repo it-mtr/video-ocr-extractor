@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR 识别进度监控</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #2d2d2d;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        h1 {
+            color: #ffd700;
+            margin-bottom: 40px;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #444;
+            border-radius: 20px;
+            height: 30px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #b8860b; /* 金色 */
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 0 10px rgba(184, 134, 11, 0.5);
+        }
+        .status-text {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            color: #888;
+            font-size: 0.9em;
+        }
+        .detail-item {
+            text-align: center;
+        }
+        .detail-value {
+            font-size: 1.5em;
+            color: #fff;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .nav-links {
+            margin-top: 40px;
+        }
+        a {
+            color: #aaa;
+            text-decoration: none;
+            border: 1px solid #555;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        a:hover {
+            color: #fff;
+            border-color: #b8860b;
+            background-color: #333;
+        }
+        .blinking {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>识别任务监控</h1>
+        
+        <div class="status-text" id="statusText">正在连接...</div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">0%</div>
+        </div>
+
+        <div class="details">
+            <div class="detail-item">
+                <span class="detail-value" id="recordsCount">0</span>
+                已识别名字
+            </div>
+            <div class="detail-item">
+                <span class="detail-value" id="currentTime">00:00</span>
+                视频进度
+            </div>
+            <div class="detail-item">
+                <span class="detail-value" id="fps">0</span>
+                处理帧率 (FPS)
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="/">返回首页</a>
+            <a href="/all">查看已识别名单</a>
+        </div>
+    </div>
+
+    <script>
+        function updateProgress() {
+            fetch('/api/progress')
+                .then(response => response.json())
+                .then(data => {
+                    // 更新进度条
+                    const percent = data.percent || 0;
+                    const progressBar = document.getElementById('progressBar');
+                    progressBar.style.width = percent + '%';
+                    progressBar.textContent = percent + '%';
+
+                    // 更新状态文字
+                    const statusText = document.getElementById('statusText');
+                    if (data.status === 'running') {
+                        statusText.innerHTML = '正在识别中 <span class="blinking">●</span>';
+                        statusText.style.color = '#4caf50'; // 绿色
+                    } else if (data.status === 'completed') {
+                        statusText.textContent = '识别任务已完成！';
+                        statusText.style.color = '#ffd700'; // 金色
+                    } else {
+                        statusText.textContent = '任务未开始或已暂停';
+                        statusText.style.color = '#888';
+                    }
+
+                    // 更新详情数据
+                    document.getElementById('recordsCount').textContent = data.records_count || 0;
+                    document.getElementById('currentTime').textContent = data.current_time_str || '00:00';
+                    
+                    // 显示总帧数/当前帧数，或者FPS
+                    // 这里我们简单显示FPS（虽然数据库里存的是视频FPS，不是处理FPS，但凑合看）
+                    // 如果你想显示处理速度，需要后端配合计算
+                    document.getElementById('fps').textContent = Math.round(data.fps || 0);
+                })
+                .catch(err => console.error('获取进度失败:', err));
+        }
+
+        // 每 2 秒轮询一次
+        setInterval(updateProgress, 2000);
+        // 立即执行一次
+        updateProgress();
+    </script>
+</body>
+</html>
+
