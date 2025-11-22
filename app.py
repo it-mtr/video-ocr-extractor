@@ -14,7 +14,9 @@ def format_real_time_filter(seconds):
     if seconds is None:
         return ""
     total_seconds = int(seconds) + OFFSET_SECONDS
-    return str(datetime.timedelta(seconds=total_seconds))
+    minutes = total_seconds // 60
+    secs = total_seconds % 60
+    return f"{minutes:02d}:{secs:02d}"
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -38,14 +40,25 @@ def index():
 def search():
     query = request.args.get('q', '').strip()
     results = []
+    total_count = 0
+    is_limited = False
+    
     if query:
         db = get_db()
         cursor = db.cursor()
-        # 使用 LIKE 进行模糊搜索
-        cursor.execute("SELECT name, timestamp_str, timestamp_seconds FROM records WHERE name LIKE ? ORDER BY timestamp_seconds", ('%' + query + '%',))
+        
+        # 先获取总数
+        cursor.execute("SELECT COUNT(*) FROM records WHERE name LIKE ?", ('%' + query + '%',))
+        total_count = cursor.fetchone()[0]
+        
+        # 限制最多返回200条结果
+        cursor.execute("SELECT name, timestamp_str, timestamp_seconds FROM records WHERE name LIKE ? ORDER BY timestamp_seconds LIMIT 200", ('%' + query + '%',))
         results = cursor.fetchall()
+        
+        # 判断是否被限制
+        is_limited = total_count > 200
     
-    return render_template('index.html', results=results, query=query)
+    return render_template('index.html', results=results, query=query, total_count=total_count, is_limited=is_limited)
 
 @app.route('/all')
 def all_names():

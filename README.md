@@ -58,7 +58,7 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/your-username/video-ocr-extractor.git
+git clone https://github.com/it-mtr/video-ocr-extractor.git
 cd video-ocr-extractor
 ```
 
@@ -231,8 +231,7 @@ ocr = PaddleOCR(use_textline_orientation=True, lang="en")  # 英文
 
 如有问题或建议，欢迎通过以下方式联系：
 
-- 提交 [Issue](https://github.com/your-username/video-ocr-extractor/issues)
-- 发送邮件至：your-email@example.com
+- 提交 [Issue](https://github.com/it-mtr/video-ocr-extractor/issues)
 
 ---
 

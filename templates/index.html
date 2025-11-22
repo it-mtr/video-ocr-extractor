@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>凡人修仙传众筹名单查询</title>
+    <title>凡人修仙传 · 道友寻名录</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Microsoft YaHei', sans-serif;
-            background-color: #1a1a1a;
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
             color: #e0e0e0;
             display: flex;
             flex-direction: column;
@@ -15,100 +20,377 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
         }
-        .container {
-            max-width: 600px;
+        
+        /* 背景轮播容器 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            background-color: #2d2d2d;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            animation: backgroundSlide 30s infinite;
+            z-index: -2;
         }
+        
+        @keyframes backgroundSlide {
+            0%, 20% {
+                background-image: url('/static/jieying-bg.png');
+            }
+            25%, 45% {
+                background-image: url('/static/guang.png');
+            }
+            50%, 70% {
+                background-image: url('/static/xue.png');
+            }
+            75%, 95% {
+                background-image: url('/static/yinyue.png');
+            }
+            100% {
+                background-image: url('/static/jieying-bg.png');
+            }
+        }
+        
+        /* 降低遮罩透明度，让背景更清晰 */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.55));
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(25, 25, 35, 0.66);
+            backdrop-filter: blur(8px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+                        0 0 0 1px rgba(255, 215, 0, 0.15);
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         h1 {
             text-align: center;
-            color: #ffd700;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+            font-weight: bold;
         }
+        
+        /* OCR 提示信息 */
+        .ocr-notice {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 193, 7, 0.15));
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-left: 4px solid #ffc107;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.5s ease-out 0.3s both;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .ocr-notice .icon {
+            font-size: 1.3em;
+            flex-shrink: 0;
+        }
+        
+        .ocr-notice .text {
+            font-size: 0.9em;
+            color: #ffd54f;
+            line-height: 1.5;
+        }
+        
         .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
+        
         input[type="text"] {
             flex: 1;
-            padding: 12px;
-            border: 1px solid #444;
-            background-color: #333;
+            padding: 14px 18px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            background: rgba(40, 40, 50, 0.7);
             color: white;
-            border-radius: 5px;
+            border-radius: 12px;
             font-size: 16px;
+            transition: all 0.3s;
+            outline: none;
         }
+        
+        input[type="text"]:focus {
+            border-color: rgba(255, 215, 0, 0.6);
+            background: rgba(40, 40, 50, 0.9);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+        
+        input[type="text"]::placeholder {
+            color: #888;
+        }
+        
         button {
-            padding: 12px 24px;
-            background-color: #b8860b;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #b8860b, #daa520);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.3s;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(184, 134, 11, 0.4);
         }
+        
         button:hover {
-            background-color: #daa520;
+            background: linear-gradient(135deg, #daa520, #ffd700);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.6);
         }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .nav-section {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-section a {
+            color: #b8860b;
+            text-decoration: none;
+            font-size: 0.95em;
+            padding: 8px 16px;
+            border: 1px solid rgba(184, 134, 11, 0.3);
+            border-radius: 20px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        
+        .nav-section a:hover {
+            background: rgba(184, 134, 11, 0.15);
+            border-color: rgba(184, 134, 11, 0.6);
+            transform: scale(1.05);
+        }
+        
+        .results-count {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.05em;
+            padding-left: 5px;
+            line-height: 1.6;
+        }
+        
+        .limit-notice {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 193, 7, 0.12));
+            border: 1px solid rgba(255, 152, 0, 0.35);
+            border-left: 4px solid #ff9800;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 15px;
+            font-size: 0.92em;
+            color: #ffb74d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        .limit-notice .icon {
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+        
         .results {
             list-style: none;
             padding: 0;
         }
+        
         .result-item {
-            background-color: #383838;
-            margin-bottom: 10px;
-            padding: 15px;
-            border-radius: 5px;
+            background: linear-gradient(135deg, rgba(50, 50, 65, 0.5), rgba(40, 40, 55, 0.5));
+            margin-bottom: 12px;
+            padding: 18px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-left: 4px solid #b8860b;
+            transition: all 0.3s;
+            animation: resultFadeIn 0.4s ease-out backwards;
         }
-        .time-badge {
-            background-color: #555;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.9em;
+        
+        .result-item:nth-child(1) { animation-delay: 0.1s; }
+        .result-item:nth-child(2) { animation-delay: 0.15s; }
+        .result-item:nth-child(3) { animation-delay: 0.2s; }
+        .result-item:nth-child(4) { animation-delay: 0.25s; }
+        .result-item:nth-child(5) { animation-delay: 0.3s; }
+        
+        @keyframes resultFadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .result-item:hover {
+            background: linear-gradient(135deg, rgba(60, 60, 75, 0.7), rgba(50, 50, 65, 0.7));
+            transform: translateX(5px);
+            border-left-color: #ffd700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .result-item .name {
+            font-weight: 500;
+            font-size: 1.05em;
             color: #fff;
         }
+        
+        .time-badge {
+            background: linear-gradient(135deg, rgba(184, 134, 11, 0.3), rgba(218, 165, 32, 0.3));
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #ffd54f;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            white-space: nowrap;
+        }
+        
         .empty-state {
             text-align: center;
             color: #888;
-            margin-top: 20px;
+            margin-top: 40px;
+            padding: 40px 20px;
+            background: rgba(50, 50, 60, 0.3);
+            border-radius: 12px;
+            font-size: 1.05em;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>凡人修仙传众筹名单查询</h1>
+        <h1>凡人修仙传 · 道友寻名录</h1>
+        
+        <!-- OCR 识别提示 -->
+        <div class="ocr-notice">
+            <span class="icon">⚠️</span>
+            <div class="text">
+                <strong>温馨提示：</strong>本系统使用 OCR 技术自动识别，识别准确率非 100%，可能存在识别错误或遗漏，请大家自行辨别核实。<br>
+                <strong>时间说明：</strong>显示的时间为《凡人修仙传》动漫第 170 集片尾中名字出现的进度时间（格式：分:秒）。
+            </div>
+        </div>
         
         <form action="/search" method="get" class="search-box">
-            <input type="text" name="q" placeholder="输入名字..." value="{{ query }}" required>
-            <button type="submit">搜 索</button>
+            <input type="text" name="q" placeholder="输入道友姓名进行查询..." value="{{ query }}" required>
+            <button type="submit">🔍 搜 索</button>
         </form>
 
-        <div style="text-align: center; margin-bottom: 30px;">
-            <a href="/all" style="color: #b8860b; text-decoration: none; font-size: 0.9em;">[ 查看所有众筹名单 ]</a>
+        <div class="nav-section">
+            <a href="/all">📜 查看完整仙友榜</a>
         </div>
 
         {% if results %}
-            <div class="results-count">找到 {{ results|length }} 条结果：</div>
+            <div class="results-count">
+                ✨ 找到 {{ results|length }} 位道友
+                {% if is_limited %}
+                    <span style="color: #ff9800; font-size: 0.9em;">（共 {{ total_count }} 个结果，仅显示前 200 条）</span>
+                {% endif %}
+            </div>
+            
+            {% if is_limited %}
+            <div class="limit-notice">
+                <span class="icon">💡</span>
+                <span>结果过多，建议使用更精确的关键词进行搜索</span>
+            </div>
+            {% endif %}
+            
             <ul class="results">
                 {% for row in results %}
                 <li class="result-item">
                     <span class="name">{{ row.name }}</span>
-                    <span class="time-badge">出现时间: {{ row.timestamp_seconds | format_real_time }}</span>
+                    <span class="time-badge">⏱️ {{ row.timestamp_seconds | format_real_time }}</span>
                 </li>
                 {% endfor %}
             </ul>
         {% elif query %}
-            <div class="empty-state">未找到名字为 "{{ query }}" 的道友。</div>
+            <div class="empty-state">
+                😔 未找到名字为 "{{ query }}" 的道友<br>
+                <small style="color: #666; margin-top: 10px; display: block;">建议：尝试修改关键词或查看完整名单</small>
+            </div>
         {% endif %}
     </div>
 </body>

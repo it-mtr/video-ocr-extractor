@@ -5,9 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OCR 识别进度监控</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Microsoft YaHei', sans-serif;
-            background-color: #1a1a1a;
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)), 
+                        url('/static/yinyue.png') center/cover fixed;
             color: #e0e0e0;
             display: flex;
             flex-direction: column;
@@ -16,94 +23,250 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background-color: #2d2d2d;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        h1 {
-            color: #ffd700;
-            margin-bottom: 40px;
-        }
-        .progress-container {
-            width: 100%;
-            background-color: #444;
-            border-radius: 20px;
-            height: 30px;
-            margin-bottom: 20px;
-            overflow: hidden;
             position: relative;
         }
+        
+        /* 动态粒子背景效果 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, rgba(100, 200, 255, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(255, 215, 0, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background: rgba(25, 25, 35, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 45px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7),
+                        0 0 0 1px rgba(100, 200, 255, 0.2);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, #64c8ff 0%, #00bfff 50%, #64c8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 0 2px 15px rgba(100, 200, 255, 0.3);
+        }
+        
+        .status-text {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: 500;
+            min-height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background: rgba(30, 30, 40, 0.7);
+            border-radius: 25px;
+            height: 40px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid rgba(100, 200, 255, 0.2);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        
         .progress-bar {
             height: 100%;
-            background-color: #b8860b; /* 金色 */
+            background: linear-gradient(90deg, #0077cc, #00bfff, #64c8ff);
+            background-size: 200% 100%;
             width: 0%;
-            transition: width 0.5s ease-in-out;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 10px;
+            padding-right: 15px;
             font-weight: bold;
             color: white;
-            box-shadow: 0 0 10px rgba(184, 134, 11, 0.5);
+            box-shadow: 0 0 20px rgba(100, 200, 255, 0.6);
+            position: relative;
+            animation: shimmer 2s linear infinite;
         }
-        .status-text {
-            font-size: 1.2em;
-            margin-bottom: 10px;
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            animation: progressShine 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
         .details {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            color: #888;
-            font-size: 0.9em;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
         }
+        
         .detail-item {
-            text-align: center;
+            background: rgba(40, 40, 55, 0.5);
+            padding: 20px 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(100, 200, 255, 0.15);
+            transition: all 0.3s;
         }
+        
+        .detail-item:hover {
+            background: rgba(50, 50, 65, 0.7);
+            border-color: rgba(100, 200, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .detail-label {
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 8px;
+            display: block;
+        }
+        
         .detail-value {
-            font-size: 1.5em;
-            color: #fff;
+            font-size: 2em;
+            color: #64c8ff;
             font-weight: bold;
             display: block;
             margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(100, 200, 255, 0.3);
         }
+        
         .nav-links {
             margin-top: 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
+        
         a {
-            color: #aaa;
+            color: #64c8ff;
             text-decoration: none;
-            border: 1px solid #555;
-            padding: 8px 16px;
-            border-radius: 4px;
+            border: 2px solid rgba(100, 200, 255, 0.3);
+            padding: 10px 24px;
+            border-radius: 25px;
             transition: all 0.3s;
+            font-weight: 500;
+            display: inline-block;
         }
+        
         a:hover {
             color: #fff;
-            border-color: #b8860b;
-            background-color: #333;
+            border-color: rgba(100, 200, 255, 0.8);
+            background: rgba(100, 200, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 200, 255, 0.3);
         }
+        
         .blinking {
-            animation: blink 1s infinite;
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: blink 1.5s ease-in-out infinite;
+            box-shadow: 0 0 10px #4caf50;
         }
+        
         @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+        
+        .status-running { color: #4caf50; }
+        .status-completed { color: #ffd700; }
+        .status-idle { color: #888; }
+        
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .details {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .detail-value {
+                font-size: 1.8em;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+            }
+            
+            a {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>识别任务监控</h1>
+        <h1>🎬 识别任务监控中心</h1>
         
-        <div class="status-text" id="statusText">正在连接...</div>
+        <div class="status-text" id="statusText">
+            <span>🔄</span>
+            <span>正在连接...</span>
+        </div>
 
         <div class="progress-container">
             <div class="progress-bar" id="progressBar">0%</div>
@@ -112,21 +275,21 @@
         <div class="details">
             <div class="detail-item">
                 <span class="detail-value" id="recordsCount">0</span>
-                已识别名字
+                <span class="detail-label">✨ 已识别名字</span>
             </div>
             <div class="detail-item">
                 <span class="detail-value" id="currentTime">00:00</span>
-                视频进度
+                <span class="detail-label">⏱️ 视频进度</span>
             </div>
             <div class="detail-item">
                 <span class="detail-value" id="fps">0</span>
-                处理帧率 (FPS)
+                <span class="detail-label">🎞️ 视频帧率</span>
             </div>
         </div>
 
         <div class="nav-links">
-            <a href="/">返回首页</a>
-            <a href="/all">查看已识别名单</a>
+            <a href="/">🏠 返回首页</a>
+            <a href="/all">📋 查看名单</a>
         </div>
     </div>
 
@@ -139,31 +302,46 @@
                     const percent = data.percent || 0;
                     const progressBar = document.getElementById('progressBar');
                     progressBar.style.width = percent + '%';
-                    progressBar.textContent = percent + '%';
+                    progressBar.textContent = Math.round(percent) + '%';
 
                     // 更新状态文字
                     const statusText = document.getElementById('statusText');
+                    statusText.className = 'status-text';
+                    
                     if (data.status === 'running') {
-                        statusText.innerHTML = '正在识别中 <span class="blinking">●</span>';
-                        statusText.style.color = '#4caf50'; // 绿色
+                        statusText.innerHTML = '<span class="blinking"></span><span class="status-running">正在识别中...</span>';
                     } else if (data.status === 'completed') {
-                        statusText.textContent = '识别任务已完成！';
-                        statusText.style.color = '#ffd700'; // 金色
+                        statusText.innerHTML = '<span>✅</span><span class="status-completed">识别任务已完成！</span>';
                     } else {
-                        statusText.textContent = '任务未开始或已暂停';
-                        statusText.style.color = '#888';
+                        statusText.innerHTML = '<span>⏸️</span><span class="status-idle">任务未开始或已暂停</span>';
                     }
 
-                    // 更新详情数据
-                    document.getElementById('recordsCount').textContent = data.records_count || 0;
+                    // 更新详情数据（添加动画效果）
+                    animateValue('recordsCount', parseInt(document.getElementById('recordsCount').textContent), data.records_count || 0, 500);
                     document.getElementById('currentTime').textContent = data.current_time_str || '00:00';
-                    
-                    // 显示总帧数/当前帧数，或者FPS
-                    // 这里我们简单显示FPS（虽然数据库里存的是视频FPS，不是处理FPS，但凑合看）
-                    // 如果你想显示处理速度，需要后端配合计算
                     document.getElementById('fps').textContent = Math.round(data.fps || 0);
                 })
-                .catch(err => console.error('获取进度失败:', err));
+                .catch(err => {
+                    console.error('获取进度失败:', err);
+                    document.getElementById('statusText').innerHTML = '<span>❌</span><span style="color: #ff5252;">连接失败，正在重试...</span>';
+                });
+        }
+
+        // 数字动画效果
+        function animateValue(id, start, end, duration) {
+            const element = document.getElementById(id);
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.round(current);
+            }, 16);
         }
 
         // 每 2 秒轮询一次
